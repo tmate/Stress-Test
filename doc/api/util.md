@@ -485,7 +485,7 @@ stream.write('With ES6');
 <!-- YAML
 added: v0.3.0
 changes:
-  - version: REPLACEME
+  - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/43576
     description: add support for `maxArrayLength` when inspecting `Set` and `Map`.
   - version:
@@ -1600,7 +1600,7 @@ Unicode "replacement character" U+FFFD.
 ## `util.transferableAbortController()`
 
 <!-- YAML
-added: REPLACEME
+added: v19.0.0
 -->
 
 > Stability: 1 - Experimental
@@ -1611,7 +1611,7 @@ as transferable and can be used with `structuredClone()` or `postMessage()`.
 ## `util.transferableAbortSignal(signal)`
 
 <!-- YAML
-added: REPLACEME
+added: v19.0.0
 -->
 
 > Stability: 1 - Experimental

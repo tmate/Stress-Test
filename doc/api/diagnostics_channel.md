@@ -459,7 +459,7 @@ Emitted when a new UDP socket is created.
 #### Process
 
 <!-- YAML
-added: REPLACEME
+added: v19.0.0
 -->
 
 `child_process`
@@ -471,7 +471,7 @@ Emitted when a new process is created.
 #### Worker Thread
 
 <!-- YAML
-added: REPLACEME
+added: v19.0.0
 -->
 
 `worker_threads`

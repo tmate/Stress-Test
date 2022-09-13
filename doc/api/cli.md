@@ -422,7 +422,7 @@ Use this flag to disable top-level await in REPL.
 ### `--experimental-shadow-realm`
 
 <!-- YAML
-added: REPLACEME
+added: v19.0.0
 -->
 
 Use this flag to enable [ShadowRealm][] support.
@@ -661,7 +661,7 @@ Specify ICU data load path. (Overrides `NODE_ICU_DATA`.)
 ### `--import=module`
 
 <!-- YAML
-added: REPLACEME
+added: v19.0.0
 -->
 
 > Stability: 1 - Experimental
@@ -1578,7 +1578,7 @@ will be chosen.
 ### `--watch`
 
 <!-- YAML
-added: REPLACEME
+added: v19.0.0
 -->
 
 > Stability: 1 - Experimental
@@ -1600,7 +1600,7 @@ $ node --watch index.js
 ### `--watch-path`
 
 <!-- YAML
-added: REPLACEME
+added: v19.0.0
 -->
 
 > Stability: 1 - Experimental
