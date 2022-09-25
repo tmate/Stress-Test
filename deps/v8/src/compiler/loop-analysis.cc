@@ -542,7 +542,7 @@ LoopTree* LoopFinder::BuildLoopTree(Graph* graph, TickCounter* tick_counter,
       graph->zone()->New<LoopTree>(graph->NodeCount(), graph->zone());
   LoopFinderImpl finder(graph, loop_tree, tick_counter, zone);
   finder.Run();
-  if (FLAG_trace_turbo_loop) {
+  if (v8_flags.trace_turbo_loop) {
     finder.Print();
   }
   return loop_tree;
@@ -620,6 +620,7 @@ ZoneUnorderedSet<Node*>* LoopFinder::FindSmallInnermostLoopFromHeader(
             WasmCode::kWasmStackGuard,
             // Fast table operations.
             WasmCode::kWasmTableGet, WasmCode::kWasmTableSet,
+            WasmCode::kWasmTableGetFuncRef, WasmCode::kWasmTableSetFuncRef,
             WasmCode::kWasmTableGrow,
             // Atomics.
             WasmCode::kWasmAtomicNotify, WasmCode::kWasmI32AtomicWait32,
@@ -693,7 +694,7 @@ bool LoopFinder::HasMarkedExits(LoopTree* loop_tree,
             unmarked_exit = (use->opcode() != IrOpcode::kTerminate);
         }
         if (unmarked_exit) {
-          if (FLAG_trace_turbo_loop) {
+          if (v8_flags.trace_turbo_loop) {
             PrintF(
                 "Cannot peel loop %i. Loop exit without explicit mark: Node %i "
                 "(%s) is inside loop, but its use %i (%s) is outside.\n",

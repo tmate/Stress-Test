@@ -37,11 +37,8 @@
 #include "src/debug/debug-interface.h"
 #include "src/debug/debug.h"
 #include "src/deoptimizer/deoptimizer.h"
-#include "src/execution/frames.h"
 #include "src/execution/microtask-queue.h"
-#include "src/init/v8.h"
 #include "src/objects/objects-inl.h"
-#include "src/snapshot/snapshot.h"
 #include "src/utils/utils.h"
 #include "test/cctest/cctest.h"
 
@@ -806,7 +803,7 @@ TEST(BreakPointConstructorBuiltin) {
 }
 
 TEST(BreakPointInlinedBuiltin) {
-  i::FLAG_allow_natives_syntax = true;
+  i::v8_flags.allow_natives_syntax = true;
   LocalContext env;
   v8::HandleScope scope(env->GetIsolate());
 
@@ -850,7 +847,7 @@ TEST(BreakPointInlinedBuiltin) {
 }
 
 TEST(BreakPointInlineBoundBuiltin) {
-  i::FLAG_allow_natives_syntax = true;
+  i::v8_flags.allow_natives_syntax = true;
   LocalContext env;
   v8::HandleScope scope(env->GetIsolate());
 
@@ -898,7 +895,7 @@ TEST(BreakPointInlineBoundBuiltin) {
 }
 
 TEST(BreakPointInlinedConstructorBuiltin) {
-  i::FLAG_allow_natives_syntax = true;
+  i::v8_flags.allow_natives_syntax = true;
   LocalContext env;
   v8::HandleScope scope(env->GetIsolate());
 
@@ -942,7 +939,7 @@ TEST(BreakPointInlinedConstructorBuiltin) {
 }
 
 TEST(BreakPointBuiltinConcurrentOpt) {
-  i::FLAG_allow_natives_syntax = true;
+  i::v8_flags.allow_natives_syntax = true;
   LocalContext env;
   v8::HandleScope scope(env->GetIsolate());
 
@@ -983,7 +980,7 @@ TEST(BreakPointBuiltinConcurrentOpt) {
 }
 
 TEST(BreakPointBuiltinTFOperator) {
-  i::FLAG_allow_natives_syntax = true;
+  i::v8_flags.allow_natives_syntax = true;
   LocalContext env;
   v8::HandleScope scope(env->GetIsolate());
 
@@ -1404,7 +1401,7 @@ TEST(Regress1163547) {
 }
 
 TEST(BreakPointInlineApiFunction) {
-  i::FLAG_allow_natives_syntax = true;
+  i::v8_flags.allow_natives_syntax = true;
   LocalContext env;
   v8::HandleScope scope(env->GetIsolate());
 
@@ -1450,7 +1447,7 @@ TEST(BreakPointInlineApiFunction) {
 
 // Test that a break point can be set at a return store location.
 TEST(BreakPointConditionBuiltin) {
-  i::FLAG_allow_natives_syntax = true;
+  i::v8_flags.allow_natives_syntax = true;
   LocalContext env;
   v8::HandleScope scope(env->GetIsolate());
 
@@ -1579,7 +1576,7 @@ TEST(BreakPointConditionBuiltin) {
 }
 
 TEST(BreakPointInlining) {
-  i::FLAG_allow_natives_syntax = true;
+  i::v8_flags.allow_natives_syntax = true;
   break_point_hit_count = 0;
   LocalContext env;
   v8::HandleScope scope(env->GetIsolate());
@@ -2925,9 +2922,9 @@ TEST(PauseInScript) {
 int message_callback_count = 0;
 
 TEST(DebugBreak) {
-  i::FLAG_stress_compaction = false;
+  i::v8_flags.stress_compaction = false;
 #ifdef VERIFY_HEAP
-  i::FLAG_verify_heap = true;
+  i::v8_flags.verify_heap = true;
 #endif
   LocalContext env;
   v8::Isolate* isolate = env->GetIsolate();
@@ -3015,9 +3012,9 @@ class DebugScopingListener : public v8::debug::DebugDelegate {
 };
 
 TEST(DebugBreakInWrappedScript) {
-  i::FLAG_stress_compaction = false;
+  i::v8_flags.stress_compaction = false;
 #ifdef VERIFY_HEAP
-  i::FLAG_verify_heap = true;
+  i::v8_flags.verify_heap = true;
 #endif
   LocalContext env;
   v8::Isolate* isolate = env->GetIsolate();
@@ -3070,9 +3067,9 @@ TEST(DebugScopeIteratorWithFunctionTemplate) {
 }
 
 TEST(DebugBreakWithoutJS) {
-  i::FLAG_stress_compaction = false;
+  i::v8_flags.stress_compaction = false;
 #ifdef VERIFY_HEAP
-  i::FLAG_verify_heap = true;
+  i::v8_flags.verify_heap = true;
 #endif
   LocalContext env;
   v8::Isolate* isolate = env->GetIsolate();
@@ -3546,8 +3543,8 @@ class ExceptionEventCounter : public v8::debug::DebugDelegate {
 };
 
 UNINITIALIZED_TEST(NoBreakOnStackOverflow) {
-  // We must set FLAG_stack_size before initializing the isolate.
-  i::FLAG_stack_size = 100;
+  // We must set v8_flags.stack_size before initializing the isolate.
+  i::v8_flags.stack_size = 100;
   v8::Isolate::CreateParams create_params;
   create_params.array_buffer_allocator = CcTest::array_buffer_allocator();
   v8::Isolate* isolate = v8::Isolate::New(create_params);
@@ -3843,7 +3840,7 @@ class DebugBreakInlineListener : public v8::debug::DebugDelegate {
 };
 
 TEST(DebugBreakInline) {
-  i::FLAG_allow_natives_syntax = true;
+  i::v8_flags.allow_natives_syntax = true;
   LocalContext env;
   v8::HandleScope scope(env->GetIsolate());
   v8::Local<v8::Context> context = env.local();
@@ -4292,7 +4289,7 @@ class DebugStepOverFunctionWithCaughtExceptionListener
 };
 
 TEST(DebugStepOverFunctionWithCaughtException) {
-  i::FLAG_allow_natives_syntax = true;
+  i::v8_flags.allow_natives_syntax = true;
 
   LocalContext env;
   v8::Isolate* isolate = env->GetIsolate();
@@ -4320,7 +4317,7 @@ size_t NearHeapLimitCallback(void* data, size_t current_heap_limit,
 }
 
 UNINITIALIZED_TEST(DebugSetOutOfMemoryListener) {
-  i::FLAG_stress_concurrent_allocation = false;
+  i::v8_flags.stress_concurrent_allocation = false;
   v8::Isolate::CreateParams create_params;
   create_params.array_buffer_allocator = CcTest::array_buffer_allocator();
   create_params.constraints.set_max_old_generation_size_in_bytes(10 * i::MB);
@@ -4343,7 +4340,7 @@ UNINITIALIZED_TEST(DebugSetOutOfMemoryListener) {
 }
 
 TEST(DebugCoverage) {
-  i::FLAG_always_opt = false;
+  i::v8_flags.always_turbofan = false;
   LocalContext env;
   v8::Isolate* isolate = env->GetIsolate();
   v8::HandleScope scope(isolate);
@@ -4398,7 +4395,7 @@ v8::debug::Coverage::ScriptData GetScriptDataAndDeleteCoverage(
 }  // namespace
 
 TEST(DebugCoverageWithCoverageOutOfScope) {
-  i::FLAG_always_opt = false;
+  i::v8_flags.always_turbofan = false;
   LocalContext env;
   v8::Isolate* isolate = env->GetIsolate();
   v8::HandleScope scope(isolate);
@@ -4469,7 +4466,7 @@ v8::debug::Coverage::FunctionData GetFunctionDataAndDeleteCoverage(
 }  // namespace
 
 TEST(DebugCoverageWithScriptDataOutOfScope) {
-  i::FLAG_always_opt = false;
+  i::v8_flags.always_turbofan = false;
   LocalContext env;
   v8::Isolate* isolate = env->GetIsolate();
   v8::HandleScope scope(isolate);
@@ -4499,7 +4496,7 @@ TEST(BuiltinsExceptionPrediction) {
   bool fail = false;
   for (i::Builtin builtin = i::Builtins::kFirst; builtin <= i::Builtins::kLast;
        ++builtin) {
-    i::Code code = FromCodeT(builtins->code(builtin));
+    i::CodeT code = builtins->code(builtin);
     if (code.kind() != i::CodeKind::BUILTIN) continue;
     auto prediction = code.GetBuiltinCatchPrediction();
     USE(prediction);
@@ -4519,11 +4516,11 @@ TEST(DebugGetPossibleBreakpointsReturnLocations) {
       "  return x > 2 ? fib(x - 1) + fib(x - 2) : fib(1) + fib(0);\n"
       "}");
   CompileRun(source);
-  v8::PersistentValueVector<v8::debug::Script> scripts(isolate);
+  std::vector<v8::Global<v8::debug::Script>> scripts;
   v8::debug::GetLoadedScripts(isolate, scripts);
-  CHECK_EQ(scripts.Size(), 1);
+  CHECK_EQ(scripts.size(), 1);
   std::vector<v8::debug::BreakLocation> locations;
-  CHECK(scripts.Get(0)->GetPossibleBreakpoints(
+  CHECK(scripts[0].Get(isolate)->GetPossibleBreakpoints(
       v8::debug::Location(0, 17), v8::debug::Location(), true, &locations));
   int returns_count = 0;
   for (size_t i = 0; i < locations.size(); ++i) {
@@ -4622,7 +4619,7 @@ i::MaybeHandle<i::Script> FindScript(
 }  // anonymous namespace
 
 UNINITIALIZED_TEST(LoadedAtStartupScripts) {
-  i::FLAG_expose_gc = true;
+  i::v8_flags.expose_gc = true;
 
   v8::Isolate::CreateParams create_params;
   create_params.array_buffer_allocator = CcTest::array_buffer_allocator();
@@ -4743,59 +4740,73 @@ TEST(SourceInfo) {
     }
   }
 
-  // Test first positon.
+  // Test first position.
   CHECK_EQ(script->GetSourceLocation(0).GetLineNumber(), 0);
   CHECK_EQ(script->GetSourceLocation(0).GetColumnNumber(), 0);
 
-  // Test second positon.
+  // Test second position.
   CHECK_EQ(script->GetSourceLocation(1).GetLineNumber(), 0);
   CHECK_EQ(script->GetSourceLocation(1).GetColumnNumber(), 1);
 
-  // Test first positin in function a().
+  // Test first position in function a().
   const int start_a =
       static_cast<int>(strstr(source, "function a") - source) + 10;
   CHECK_EQ(script->GetSourceLocation(start_a).GetLineNumber(), 1);
   CHECK_EQ(script->GetSourceLocation(start_a).GetColumnNumber(), 10);
 
-  // Test first positin in function b().
+  // Test first position in function b().
   const int start_b =
       static_cast<int>(strstr(source, "function    b") - source) + 13;
   CHECK_EQ(script->GetSourceLocation(start_b).GetLineNumber(), 2);
   CHECK_EQ(script->GetSourceLocation(start_b).GetColumnNumber(), 13);
 
-  // Test first positin in function c().
+  // Test first position in function c().
   const int start_c =
       static_cast<int>(strstr(source, "function c") - source) + 10;
   CHECK_EQ(script->GetSourceLocation(start_c).GetLineNumber(), 5);
   CHECK_EQ(script->GetSourceLocation(start_c).GetColumnNumber(), 12);
 
-  // Test first positin in function d().
+  // Test first position in function d().
   const int start_d =
       static_cast<int>(strstr(source, "function d") - source) + 10;
   CHECK_EQ(script->GetSourceLocation(start_d).GetLineNumber(), 12);
   CHECK_EQ(script->GetSourceLocation(start_d).GetColumnNumber(), 10);
 
   // Test offsets.
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(1, 10)), start_a);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(2, 13)), start_b);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(3, 0)), start_b + 5);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(3, 2)), start_b + 7);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(4, 0)), start_b + 16);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(5, 12)), start_c);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(6, 0)), start_c + 6);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(7, 0)), start_c + 19);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(8, 0)), start_c + 35);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(9, 0)), start_c + 48);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(10, 0)), start_c + 64);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(11, 0)), start_c + 70);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(12, 10)), start_d);
-  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(13, 0)), start_d + 6);
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(1, 10)),
+           v8::Just(start_a));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(2, 13)),
+           v8::Just(start_b));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(3, 0)),
+           v8::Just(start_b + 5));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(3, 2)),
+           v8::Just(start_b + 7));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(4, 0)),
+           v8::Just(start_b + 16));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(5, 12)),
+           v8::Just(start_c));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(6, 0)),
+           v8::Just(start_c + 6));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(7, 0)),
+           v8::Just(start_c + 19));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(8, 0)),
+           v8::Just(start_c + 35));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(9, 0)),
+           v8::Just(start_c + 48));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(10, 0)),
+           v8::Just(start_c + 64));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(11, 0)),
+           v8::Just(start_c + 70));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(12, 10)),
+           v8::Just(start_d));
+  CHECK_EQ(script->GetSourceOffset(v8::debug::Location(13, 0)),
+           v8::Just(start_d + 6));
   for (int i = 1; i <= num_lines_d; ++i) {
     CHECK_EQ(script->GetSourceOffset(v8::debug::Location(start_line_d + i, 0)),
-             6 + (i * line_length_d) + start_d);
+             v8::Just(6 + (i * line_length_d) + start_d));
   }
   CHECK_EQ(script->GetSourceOffset(v8::debug::Location(start_line_d + 17, 0)),
-           start_d + 158);
+           v8::Nothing<int>());
 
   // Make sure invalid inputs work properly.
   const int last_position = static_cast<int>(strlen(source)) - 1;
@@ -5547,7 +5558,7 @@ TEST(TerminateOnResumeAtUnhandledRejectionCppImpl) {
   auto data = std::make_pair(isolate, &env);
   v8::debug::SetDebugDelegate(env->GetIsolate(), &delegate);
   {
-    // We want to trigger a breapoint upon Promise rejection, but we will only
+    // We want to trigger a breakpoint upon Promise rejection, but we will only
     // get the callback if there is at least one JavaScript frame in the stack.
     v8::Local<v8::Function> func =
         v8::Function::New(env.local(), RejectPromiseThroughCpp,

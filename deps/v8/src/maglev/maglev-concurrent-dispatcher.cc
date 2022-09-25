@@ -88,7 +88,7 @@ MaglevCompilationJob::MaglevCompilationJob(
     std::unique_ptr<MaglevCompilationInfo>&& info)
     : OptimizedCompilationJob(kMaglevCompilerName, State::kReadyToPrepare),
       info_(std::move(info)) {
-  DCHECK(FLAG_maglev);
+  DCHECK(v8_flags.maglev);
 }
 
 MaglevCompilationJob::~MaglevCompilationJob() = default;
@@ -101,24 +101,26 @@ CompilationJob::Status MaglevCompilationJob::PrepareJobImpl(Isolate* isolate) {
 CompilationJob::Status MaglevCompilationJob::ExecuteJobImpl(
     RuntimeCallStats* stats, LocalIsolate* local_isolate) {
   LocalIsolateScope scope{info(), local_isolate};
-  maglev::MaglevCompiler::Compile(local_isolate,
-                                  info()->toplevel_compilation_unit());
+  maglev::MaglevCompiler::Compile(local_isolate, info());
   // TODO(v8:7700): Actual return codes.
   return CompilationJob::SUCCEEDED;
 }
 
 CompilationJob::Status MaglevCompilationJob::FinalizeJobImpl(Isolate* isolate) {
   Handle<CodeT> codet;
-  if (!maglev::MaglevCompiler::GenerateCode(info()->toplevel_compilation_unit())
-           .ToHandle(&codet)) {
+  if (!maglev::MaglevCompiler::GenerateCode(isolate, info()).ToHandle(&codet)) {
     return CompilationJob::FAILED;
   }
-  info()->function()->set_code(*codet);
+  info()->toplevel_compilation_unit()->function().object()->set_code(*codet);
   return CompilationJob::SUCCEEDED;
 }
 
 Handle<JSFunction> MaglevCompilationJob::function() const {
-  return info_->function();
+  return info_->toplevel_compilation_unit()->function().object();
+}
+
+bool MaglevCompilationJob::specialize_to_function_context() const {
+  return info_->specialize_to_function_context();
 }
 
 // The JobTask is posted to V8::GetCurrentPlatform(). It's responsible for
@@ -159,7 +161,7 @@ class MaglevConcurrentDispatcher::JobTask final : public v8::JobTask {
 
 MaglevConcurrentDispatcher::MaglevConcurrentDispatcher(Isolate* isolate)
     : isolate_(isolate) {
-  if (FLAG_concurrent_recompilation && FLAG_maglev) {
+  if (v8_flags.concurrent_recompilation && v8_flags.maglev) {
     job_handle_ = V8::GetCurrentPlatform()->PostJob(
         TaskPriority::kUserVisible, std::make_unique<JobTask>(this));
     DCHECK(is_enabled());
@@ -190,13 +192,17 @@ void MaglevConcurrentDispatcher::FinalizeFinishedJobs() {
   while (!outgoing_queue_.IsEmpty()) {
     std::unique_ptr<MaglevCompilationJob> job;
     outgoing_queue_.Dequeue(&job);
-    CompilationJob::Status status = job->FinalizeJob(isolate_);
-    // TODO(v8:7700): Use the result and check if job succeed
-    // when all the bytecodes are implemented.
-    if (status == CompilationJob::SUCCEEDED) {
-      Compiler::FinalizeMaglevCompilationJob(job.get(), isolate_);
-    }
+    Compiler::FinalizeMaglevCompilationJob(job.get(), isolate_);
   }
+}
+
+void MaglevConcurrentDispatcher::AwaitCompileJobs() {
+  // Use Join to wait until there are no more queued or running jobs.
+  job_handle_->Join();
+  // Join kills the job handle, so drop it and post a new one.
+  job_handle_ = V8::GetCurrentPlatform()->PostJob(
+      TaskPriority::kUserVisible, std::make_unique<JobTask>(this));
+  DCHECK(incoming_queue_.IsEmpty());
 }
 
 }  // namespace maglev

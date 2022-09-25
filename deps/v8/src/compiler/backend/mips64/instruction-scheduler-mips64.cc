@@ -127,8 +127,6 @@ int InstructionScheduler::GetTargetInstructionFlags(
     case kMips64F32x4Ne:
     case kMips64F32x4Neg:
     case kMips64F32x4Sqrt:
-    case kMips64F32x4RecipApprox:
-    case kMips64F32x4RecipSqrtApprox:
     case kMips64F32x4ReplaceLane:
     case kMips64F32x4SConvertI32x4:
     case kMips64F32x4Splat:
@@ -1276,7 +1274,7 @@ int InstructionScheduler::GetInstructionLatency(const Instruction* instr) {
       return JumpLatency();
     case kArchCallJSFunction: {
       int latency = 0;
-      if (FLAG_debug_code) {
+      if (v8_flags.debug_code) {
         latency = 1 + AssertLatency();
       }
       return latency + 1 + DadduLatency(false) + CallLatency();
